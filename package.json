@@ -14,8 +14,8 @@
     "start": "yarn workspaces foreach --parallel -i -j unlimited run start",
     "build": "yarn workspaces foreach --parallel -i -j unlimited run build",
     "test": "yarn workspaces foreach -i run test",
-    "patch": "yarn workspaces foreach -i version patch",
-    "publish-to-npm": "yarn workspace cdc-contracts publish && yarn workspace cdc-contracts-pact publish",
+    "patch-version": "yarn workspaces foreach -i version patch",
+    "publish-to-npm": "yarn workspace cdc-contracts npm publish && yarn workspace cdc-contracts-pact npm publish",
     "postinstall": "yarn workspace cdc-contracts postinstall && yarn workspace cdc-contracts-pact postinstall"
   },
   "files": [],
