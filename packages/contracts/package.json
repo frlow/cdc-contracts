@@ -1,7 +1,7 @@
 {
   "name": "cdc-contracts",
   "repository": "https://github.com/frlow/cdc-contracts",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "devDependencies": {

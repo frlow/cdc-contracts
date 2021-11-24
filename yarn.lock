@@ -1584,7 +1584,7 @@ __metadata:
     "@pact-foundation/pact": ^9.16.5
     "@types/jest": ^27.0.2
     "@types/node": ^16.11.1
-    cdc-contracts: ^1.0.2
+    cdc-contracts: ^1.0.3
     concurrently: ^6.4.0
     jest: ^27.3.1
     node-fetch-commonjs: ^3.0.3
@@ -1594,7 +1594,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"cdc-contracts@^1.0.2, cdc-contracts@workspace:packages/contracts":
+"cdc-contracts@^1.0.3, cdc-contracts@workspace:packages/contracts":
   version: 0.0.0-use.local
   resolution: "cdc-contracts@workspace:packages/contracts"
   dependencies:
