@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "yarn workspaces foreach --parallel -i -j unlimited run start",
-    "build": "yarn workspaces foreach --parallel -i -j unlimited run build",
+    "build": "yarn workspace cdc-contracts build && yarn workspace cdc-contracts-pact build",
     "test": "yarn workspaces foreach -i run test",
     "patch-version": "yarn workspaces foreach -i version patch",
     "publish-to-npm": "yarn workspace cdc-contracts npm publish && yarn workspace cdc-contracts-pact npm publish",
