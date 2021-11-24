@@ -1,7 +1,7 @@
 {
   "name": "cdc-contracts",
   "repository": "https://github.com/frlow/cdc-contracts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "devDependencies": {
@@ -18,8 +18,7 @@
     "build": "concurrently \"npm:build:cjs\" \"npm:build:esm\"",
     "build:cjs": "tsc -p tsconfig-build.json --module commonjs --outdir dist/cjs --target es2020",
     "build:esm": "tsc -p tsconfig-build.json --module es6 --outdir dist/esm --target  es2020",
-    "start": "concurrently \"yarn build:cjs --watch\" \"yarn build:esm --watch\"",
-    "postinstall": "yarn build"
+    "start": "concurrently \"yarn build:cjs --watch\" \"yarn build:esm --watch\""
   },
   "files": [
     "dist"

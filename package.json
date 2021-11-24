@@ -16,7 +16,7 @@
     "test": "yarn workspaces foreach -i run test",
     "patch-version": "yarn workspaces foreach -i version patch",
     "publish-to-npm": "yarn workspace cdc-contracts npm publish && yarn workspace cdc-contracts-pact npm publish",
-    "postinstall": "yarn workspace cdc-contracts postinstall && yarn workspace cdc-contracts-pact postinstall"
+    "postinstall": "yarn workspace cdc-contracts build && yarn workspace cdc-contracts-pact build"
   },
   "files": [],
   "dependencies": {
