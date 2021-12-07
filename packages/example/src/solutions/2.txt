@@ -1,0 +1,11 @@
+const result = await contracts.getCustomers.Fetch(
+            {region: "region"},
+            {logid: "someid"},
+            {Authorization: "token"},
+            undefined,
+            async (method, url, headers) => {
+                const response = await fetch(url, {method, headers})
+                const body = await response.json()
+                return {body, status: response.status}
+            })
+        return result.body

@@ -1,0 +1,4 @@
+return [
+            {name: "Adam", customerNr: 0, payment: true},
+            {name: "Bertil", customerNr: 1, payment: false},
+        ]

@@ -1,0 +1,8 @@
+const result = await fetch('/api/customers/someRegion?logid=abcd', {
+            headers: {
+                "x-client": "customer-web",
+                Authorization: "Bearer sdfpijw45oue987jf9sde75j9dy58dhfyouy54hfou4y5h",
+            }
+        })
+        const data: { name: string, customerNr: number, payment: boolean }[] = await result.json()
+        return data
