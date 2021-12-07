@@ -1,4 +1,4 @@
-import {GetContract, ResponseCollection} from "cdc-contracts";
+import {GetContract} from "cdc-contracts";
 
 export const getCustomers = new GetContract(
     "Get customers",
