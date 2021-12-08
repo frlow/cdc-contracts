@@ -1,16 +1,19 @@
 import "./App.css";
 import {useQuery} from "react-query";
 import {contracts} from "./contracts";
-import {createDefaultFetch} from "cdc-contracts";
+import {createDefaultFetch, defaultParams} from "cdc-contracts";
 
 function App() {
     const customers = useQuery("customers", async () => {
         const result = await contracts.getCustomers.Fetch(
-            {region: "region"},
-            {logid: "someid"},
-            {Authorization: "token"},
-            undefined,
-            createDefaultFetch(fetch, ""))
+            {
+                fetchFunc: createDefaultFetch(fetch, ""),
+                path: {region: "region"},
+                query: {logid: "someId"},
+                header: {Authorization: "token"},
+                body: undefined
+            })
+
         return result.body
 
     })
@@ -40,7 +43,11 @@ function App() {
                 <h5>Add new customer</h5>
                 <input value={"Caesar"}/>
                 <button onClick={async () => {
-                    await contracts.postAddCustomer.Fetch({}, {}, {}, {name: "Caesar"}, createDefaultFetch(fetch, ""))
+                    await contracts.postAddCustomer.Fetch({
+                        ...defaultParams,
+                        body: {name: "Caesar"},
+                        fetchFunc: createDefaultFetch(fetch, "")
+                    })
                     customers.refetch()
                 }}>Add new customer
                 </button>

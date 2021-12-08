@@ -1,4 +1,4 @@
-import {ContractCollection} from 'cdc-contracts'
+import {ContractCollection, FetchFunc} from 'cdc-contracts'
 import {Interaction, Pact} from '@pact-foundation/pact'
 import path from 'path'
 import fetch from 'node-fetch-commonjs'
@@ -70,30 +70,33 @@ export const testContracts = (
                         .withRequest(request)
                         .willRespondWith(response)
                     await pact.addInteraction(interaction)
-                    const result = await contract.Fetch(
-                        contract.Request.params.path,
-                        contract.Request.params.query,
-                        contract.Request.params.header,
-                        contract.RequestBody,
-                        (method, url, headers, body) => {
-                            const fullUrl = `http://localhost:${pact.opts.port}${url}`
-                            return fetch(fullUrl, {
-                                method,
-                                headers,
-                                body: JSON.stringify(body),
-                            }).then(async (d) => {
-                                const serializedData = await d.text()
-                                let data: any = undefined
-                                if (serializedData === '') data = undefined
-                                else {
-                                    try {
-                                        data = JSON.parse(serializedData)
-                                    } catch {
-                                        data = serializedData
-                                    }
+                    const fetchFunc: FetchFunc<any, any> = (method, url, headers, body) => {
+                        const fullUrl = `http://localhost:${pact.opts.port}${url}`
+                        return fetch(fullUrl, {
+                            method,
+                            headers,
+                            body: JSON.stringify(body),
+                        }).then(async (d) => {
+                            const serializedData = await d.text()
+                            let data: any = undefined
+                            if (serializedData === '') data = undefined
+                            else {
+                                try {
+                                    data = JSON.parse(serializedData)
+                                } catch {
+                                    data = serializedData
                                 }
-                                return {body: data, status: d.status}
-                            })
+                            }
+                            return {body: data, status: d.status}
+                        })
+                    }
+                    const result = await contract.Fetch(
+                        {
+                            fetchFunc,
+                            path: contract.Request.params.path,
+                            body: contract.RequestBody,
+                            query: contract.Request.params.query,
+                            header: contract.Request.params.header
                         }
                     )
                     testFunctions.expectEqual(result.status, response.status)

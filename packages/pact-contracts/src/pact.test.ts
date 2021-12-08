@@ -6,7 +6,7 @@ import {
 } from 'cdc-contracts'
 
 describe('Pact', () => {
-    const simpleGetContract = new GetContract<{}, {}, {}, { value: string }>(
+    const simpleGetContract = new GetContract<{ value: string }>(
         'Get Demo',
         {
             headers: {'content-type': 'application/json'},
@@ -22,10 +22,7 @@ describe('Pact', () => {
         }
     )
 
-    const complexGetContract = new GetContract<{ one: string },
-        { two: string },
-        { three: string },
-        { value: string }>(
+    const complexGetContract = new GetContract<{ value: string }>(
         'Get Demo',
         {
             headers: {'content-type': 'application/json'},

@@ -75,26 +75,28 @@ export abstract class Contract<TPathParams extends Params,
     }
 
     public async Fetch(
-        pathParams: TPathParams,
-        queryParams: TQueryParams,
-        headersParams: THeaderParams,
-        requestBody: TRequestBody,
-        callback: FetchFunc<TRequestBody, TResponseBody>
+        request: {
+            fetchFunc: FetchFunc<TRequestBody, TResponseBody>
+            path: TPathParams,
+            query: TQueryParams,
+            header: THeaderParams,
+            body: TRequestBody,
+        }
     ) {
         const queryParamsValue =
-            Object.keys(queryParams).length === 0
+            Object.keys(request.query).length === 0
                 ? ''
-                : `?${Object.keys(queryParams)
-                    .map((key) => `${key}=${queryParams[key]}`)
+                : `?${Object.keys(request.query)
+                    .map((key) => `${key}=${request.query[key]}`)
                     .join('&')}`
         const path = this.request.path.replace(/\/$/, '')
-        return await callback(
+        return await request.fetchFunc(
             this.method,
             `${[path]
-                .concat(Object.values(pathParams))
+                .concat(Object.values(request.path))
                 .join('/')}${queryParamsValue}`,
-            {...this.request.headers, ...headersParams},
-            requestBody
+            {...this.request.headers, ...request.header},
+            request.body
         )
     }
 
@@ -269,4 +271,11 @@ export const createMockStore = (contracts: ContractCollection) => {
         delays[contractKey] = delay
     }
     return {getResponse, setResponse, setDelay}
+}
+
+export const defaultParams = {
+    path: {},
+    query: {},
+    header: {}
+
 }

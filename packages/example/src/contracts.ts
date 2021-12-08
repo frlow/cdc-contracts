@@ -1,4 +1,4 @@
-import {GetContract, PostContract} from "cdc-contracts";
+import {GetContract, PostContract, defaultParams} from "cdc-contracts";
 
 export const getCustomers = new GetContract(
     "Get customers",
@@ -45,8 +45,8 @@ export const getCustomers = new GetContract(
 );
 
 const postAddCustomer = new PostContract("Add new customer", {
+        params: {...defaultParams},
         path: "/api/customer",
-        params: {path: {}, query: {}, header: {}},
         headers: {"content-type": "Application/json"},
     },
     {name: "Caesar"},

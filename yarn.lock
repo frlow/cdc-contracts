@@ -1994,14 +1994,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cdc-contracts-pact@^1.0.4, cdc-contracts-pact@workspace:packages/pact-contracts":
+"cdc-contracts-pact@^1.0.5, cdc-contracts-pact@workspace:packages/pact-contracts":
   version: 0.0.0-use.local
   resolution: "cdc-contracts-pact@workspace:packages/pact-contracts"
   dependencies:
     "@pact-foundation/pact": ^9.16.5
     "@types/jest": ^27.0.2
     "@types/node": ^16.11.1
-    cdc-contracts: ^1.0.4
+    cdc-contracts: ^1.0.5
     concurrently: ^6.4.0
     jest: ^27.3.1
     node-fetch-commonjs: ^3.0.3
@@ -2011,7 +2011,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"cdc-contracts@^1.0.4, cdc-contracts@workspace:packages/contracts":
+"cdc-contracts@^1.0.5, cdc-contracts@workspace:packages/contracts":
   version: 0.0.0-use.local
   resolution: "cdc-contracts@workspace:packages/contracts"
   dependencies:
@@ -2034,8 +2034,8 @@ __metadata:
     "@types/react": ^17.0.33
     "@types/react-dom": ^17.0.10
     "@vitejs/plugin-react": ^1.0.7
-    cdc-contracts: ^1.0.4
-    cdc-contracts-pact: ^1.0.4
+    cdc-contracts: ^1.0.5
+    cdc-contracts-pact: ^1.0.5
     concurrently: ^6.4.0
     express: ^4.17.1
     jest: ^27.4.3
