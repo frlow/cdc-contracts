@@ -1,12 +1,17 @@
 import "./App.css";
 import {useQuery} from "react-query";
+import {contracts} from "./contracts";
+import {createDefaultFetch} from "cdc-contracts";
 
 function App() {
     const customers = useQuery("customers", async () => {
-        return [
-            {name: "Adam", customerNr: 0, payment: true},
-            {name: "Bertil", customerNr: 1, payment: false},
-        ]
+        const result = await contracts.getCustomers.Fetch(
+            {region: "region"},
+            {logid: "someid"},
+            {Authorization: "token"},
+            undefined,
+            createDefaultFetch(fetch, ""))
+        return result.body
 
     })
     if (!customers.data) return <div>...Loading</div>
@@ -31,6 +36,15 @@ function App() {
                 }
                 </tbody>
             </table>
+            <div>
+                <h5>Add new customer</h5>
+                <input value={"Caesar"}/>
+                <button onClick={async () => {
+                    await contracts.postAddCustomer.Fetch({}, {}, {}, {name: "Caesar"}, createDefaultFetch(fetch, ""))
+                    customers.refetch()
+                }}>Add new customer
+                </button>
+            </div>
         </div>
     );
 }

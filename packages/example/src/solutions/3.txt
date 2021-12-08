@@ -1,7 +1,0 @@
-const result = await contracts.getCustomers.Fetch(
-            {region: "region"},
-            {logid: "someid"},
-            {Authorization: "token"},
-            undefined,
-            createDefaultFetch(fetch, ""))
-        return result.body

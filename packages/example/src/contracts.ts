@@ -1,4 +1,4 @@
-import {GetContract} from "cdc-contracts";
+import {GetContract, PostContract} from "cdc-contracts";
 
 export const getCustomers = new GetContract(
     "Get customers",
@@ -32,7 +32,31 @@ export const getCustomers = new GetContract(
             description: "User is not authorized",
             status: 401,
         },
+        withCaesar: {
+            description: 'Found customers on server',
+            status: 200,
+            body: [
+                {name: 'Adam', customerNr: 0, payment: true},
+                {name: 'Bertil', customerNr: 1, payment: false},
+                {name: 'Caesar', customerNr: 2, payment: false},
+            ],
+        },
     }
 );
 
-export const contracts = {getCustomers};
+const postAddCustomer = new PostContract("Add new customer", {
+        path: "/api/customer",
+        params: {path: {}, query: {}, header: {}},
+        headers: {"content-type": "Application/json"},
+    },
+    {name: "Caesar"},
+    {
+        success: {
+            status: 200,
+            transitions: {
+                getCustomers: "withCaesar"
+            }
+        }
+    })
+
+export const contracts = {getCustomers, postAddCustomer}
