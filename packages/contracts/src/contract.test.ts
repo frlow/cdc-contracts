@@ -302,4 +302,65 @@ describe('Contract', () => {
         const serialized = serializeContracts({getContract})
         expect(serialized).not.toBeUndefined()
     })
+
+    test("Set response", async ()=>{
+        const getContract = new GetContract(
+            'Description',
+            {
+                headers: {},
+                path: '/api/other',
+                params: {path: {}, header: {}, query: {}},
+            },
+            {
+                responseA: {
+                    body: {name: 'A'},
+                    status: 200,
+                    headers: {'content-type': 'application/json'},
+                },
+                responseB: {
+                    body: {name: 'B'},
+                    status: 200,
+                    headers: {'content-type': 'application/json'},
+                },
+            }
+        )
+        const store = createMockStore({getContract})
+        const response1 = await store.getResponse('GET', '/api/other')
+        expect(response1?.body).toStrictEqual({name: 'A'})
+        store.setResponse('getContract', 'responseB')
+        const response2 = await store.getResponse('GET', '/api/other')
+        expect(response2?.body).toStrictEqual({name: 'B'})
+    })
+
+    test("Reset store", async ()=>{
+        const getContract = new GetContract(
+            'Description',
+            {
+                headers: {},
+                path: '/api/other',
+                params: {path: {}, header: {}, query: {}},
+            },
+            {
+                responseA: {
+                    body: {name: 'A'},
+                    status: 200,
+                    headers: {'content-type': 'application/json'},
+                },
+                responseB: {
+                    body: {name: 'B'},
+                    status: 200,
+                    headers: {'content-type': 'application/json'},
+                },
+            }
+        )
+        const store = createMockStore({getContract})
+        const response1 = await store.getResponse('GET', '/api/other')
+        expect(response1?.body).toStrictEqual({name: 'A'})
+        store.setResponse('getContract', 'responseB')
+        const response2 = await store.getResponse('GET', '/api/other')
+        expect(response2?.body).toStrictEqual({name: 'B'})
+        store.reset()
+        const response3 = await store.getResponse('GET', '/api/other')
+        expect(response3?.body).toStrictEqual({name: 'A'})
+    })
 })

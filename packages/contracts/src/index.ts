@@ -238,6 +238,9 @@ export type MockStore = ReturnType<typeof createMockStore>
 export const createMockStore = (contracts: ContractCollection) => {
     const selectedResponses: { [index: string]: string } = {}
     const delays: { [index: string]: number } = {}
+    const reset = () => {
+        Object.keys(selectedResponses).forEach(key => delete selectedResponses[key])
+    }
     const objectToArray = <T>(obj: { [index: string]: T } | undefined) => {
         if (!obj) return []
         return Object.keys(obj).map((key) => ({
@@ -270,7 +273,7 @@ export const createMockStore = (contracts: ContractCollection) => {
     const setDelay = (contractKey: string, delay: number) => {
         delays[contractKey] = delay
     }
-    return {getResponse, setResponse, setDelay}
+    return {getResponse, setResponse, setDelay, reset}
 }
 
 export const defaultParams = {
