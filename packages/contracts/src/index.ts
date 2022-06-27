@@ -237,7 +237,6 @@ export type ContractCollection = {
 export type MockStore = ReturnType<typeof createMockStore>
 export const createMockStore = (contracts: ContractCollection) => {
     const selectedResponses: { [index: string]: string } = {}
-    const delays: { [index: string]: number } = {}
     const reset = () => {
         Object.keys(selectedResponses).forEach(key => delete selectedResponses[key])
     }
@@ -257,8 +256,6 @@ export const createMockStore = (contracts: ContractCollection) => {
             c.value.MatchesUrl(url)
         )
         if (!contract) return undefined
-        if (delays[contract.key])
-            await new Promise((r) => setTimeout(r, delays[contract.key]))
         const response = contract.value.GetMockResponse(
             selectedResponses[contract.key]
         )
@@ -270,10 +267,7 @@ export const createMockStore = (contracts: ContractCollection) => {
     const setResponse = (contractKey: string, responseKey: string) => {
         selectedResponses[contractKey] = responseKey
     }
-    const setDelay = (contractKey: string, delay: number) => {
-        delays[contractKey] = delay
-    }
-    return {getResponse, setResponse, setDelay, reset}
+    return {getResponse, setResponse, reset}
 }
 
 export const defaultParams = {
