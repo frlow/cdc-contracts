@@ -103,7 +103,7 @@ export abstract class Contract<TPathParams extends Params,
       if(!result) throw "Mock result not found"
       return result
     } else {
-      const fetchFunc = request.fetchFunc || createDefaultFetch(fetch, "/")
+      const fetchFunc = request.fetchFunc || createDefaultFetch(fetch, "")
       return await fetchFunc(
         this.method,
         `${[path]
