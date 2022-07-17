@@ -1,4 +1,5 @@
 import {
+  autoMock,
   Contract,
   createMockStore,
   DeleteContract,
@@ -385,14 +386,14 @@ describe('Contract', () => {
     const store = createMockStore({getContract})
     let value = false
     store.getResponse('GET', '/api/hold').then(() => value = true)
-    await new Promise(r=>setTimeout(()=>r(""), 1))
+    await new Promise(r => setTimeout(() => r(""), 1))
     expect(value).toEqual(false)
     store.release("getContract")
-    await new Promise(r=>setTimeout(()=>r(""), 1))
+    await new Promise(r => setTimeout(() => r(""), 1))
     expect(value).toEqual(true)
   })
 
-  test("Automatic mocking", async ()=>{
+  test("Automatic mocking", async () => {
     const example = {
       body: {name: 'myName'},
       status: 200,
@@ -409,7 +410,8 @@ describe('Contract', () => {
         success: example,
       }
     )
-    ;(window as any).cdcAutoMock = createMockStore({getContract})
+    const contracts = {getContract}
+    autoMock(contracts)
     const result = await getContract.Fetch({
       fetchFunc: jest.fn(),
       path: {},

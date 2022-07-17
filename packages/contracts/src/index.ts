@@ -249,6 +249,14 @@ export type ContractCollection = {
   [index: string]: Contract<any, any, any, any, any>
 }
 
+export const autoMock = (contracts: ContractCollection) =>{
+  if (typeof window === 'undefined') {
+    (global as any).window = {};
+  }
+  (window as any).cdcAutoMock =
+    createMockStore(contracts)
+}
+
 export type MockStore = ReturnType<typeof createMockStore>
 export const createMockStore = (contracts: ContractCollection) => {
   const selectedResponses: { [index: string]: string } = {}
