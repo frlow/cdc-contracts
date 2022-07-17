@@ -99,8 +99,8 @@ export const testContracts = (
                             header: contract.Request.params.header
                         }
                     )
-                    testFunctions.expectEqual(result.status, response.status)
-                    testFunctions.expectEqual(result.body || undefined, response.body)
+                    testFunctions.expectEqual(result?.status, response.status)
+                    testFunctions.expectEqual(result?.body || undefined, response.body)
                 })
             }
         })

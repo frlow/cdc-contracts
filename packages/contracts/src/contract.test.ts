@@ -391,4 +391,32 @@ describe('Contract', () => {
     await new Promise(r=>setTimeout(()=>r(""), 1))
     expect(value).toEqual(true)
   })
+
+  test("Automatic mocking", async ()=>{
+    const example = {
+      body: {name: 'myName'},
+      status: 200,
+      headers: {'content-type': 'application/json'},
+    }
+    const getContract = new GetContract(
+      'Description',
+      {
+        headers: {},
+        path: '/api/test',
+        params: {path: {}, header: {}, query: {}},
+      },
+      {
+        success: example,
+      }
+    )
+    ;(window as any).cdcAutoMock = createMockStore({getContract})
+    const result = await getContract.Fetch({
+      fetchFunc: jest.fn(),
+      path: {},
+      header: {},
+      query: {},
+      body: undefined
+    })
+    expect(result).toEqual(example)
+  })
 })

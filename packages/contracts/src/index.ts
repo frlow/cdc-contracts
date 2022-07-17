@@ -13,7 +13,7 @@ export interface ResponseExample<TResponseBody> {
 
 export interface FetchResponse<T> {
   status: number
-  body: T
+  body?: T
 }
 
 export interface Request<TPathParams extends Params,
@@ -77,7 +77,7 @@ export abstract class Contract<TPathParams extends Params,
 
   public async Fetch(
     request: {
-      fetchFunc: FetchFunc<TRequestBody, TResponseBody>
+      fetchFunc?: FetchFunc<TRequestBody, TResponseBody>
       path: TPathParams,
       query: TQueryParams,
       header: THeaderParams,
@@ -91,14 +91,26 @@ export abstract class Contract<TPathParams extends Params,
           .map((key) => `${key}=${request.query[key]}`)
           .join('&')}`
     const path = this.request.path.replace(/\/$/, '')
-    return await request.fetchFunc(
-      this.method,
-      `${[path]
+    if (typeof window === 'undefined') {
+      (global as any).window = {};
+    }
+    const autoMock: MockStore = (window as any).cdcAutoMock
+    if (autoMock) {
+      const url = `${[path]
         .concat(Object.values(request.path))
-        .join('/')}${queryParamsValue}`,
-      {...this.request.headers, ...request.header},
-      request.body
-    )
+        .join('/')}${queryParamsValue}`
+      return await autoMock.getResponse(this.method,url)
+    } else {
+      const fetchFunc = request.fetchFunc || createDefaultFetch(fetch, "/")
+      return await fetchFunc(
+        this.method,
+        `${[path]
+          .concat(Object.values(request.path))
+          .join('/')}${queryParamsValue}`,
+        {...this.request.headers, ...request.header},
+        request.body
+      )
+    }
   }
 
   public GetMockResponse(key: string) {
