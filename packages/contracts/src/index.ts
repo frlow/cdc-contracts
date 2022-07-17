@@ -83,7 +83,7 @@ export abstract class Contract<TPathParams extends Params,
       header: THeaderParams,
       body: TRequestBody,
     }
-  ) {
+  ): Promise<FetchResponse<TResponseBody>> {
     const queryParamsValue =
       Object.keys(request.query).length === 0
         ? ''
@@ -99,7 +99,9 @@ export abstract class Contract<TPathParams extends Params,
       const url = `${[path]
         .concat(Object.values(request.path))
         .join('/')}${queryParamsValue}`
-      return await autoMock.getResponse(this.method,url)
+      const result = await autoMock.getResponse(this.method,url)
+      if(!result) throw "Mock result not found"
+      return result
     } else {
       const fetchFunc = request.fetchFunc || createDefaultFetch(fetch, "/")
       return await fetchFunc(
