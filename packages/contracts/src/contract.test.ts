@@ -421,4 +421,34 @@ describe('Contract', () => {
     })
     expect(result).toEqual(example)
   })
+  test("Hold and release with timer", async () => {
+    const getContract = new GetContract(
+      'Description',
+      {
+        headers: {},
+        path: '/api/hold',
+        params: {path: {}, header: {}, query: {}},
+      },
+      {
+        response: {
+          body: {name: 'A'},
+          status: 200,
+          headers: {'content-type': 'application/json'},
+          hold: true
+        }
+      }
+    )
+    const contracts = {getContract}
+    autoMock(contracts, 25)
+    const before = new Date().getTime()
+    await getContract.Fetch({
+      fetchFunc: jest.fn(),
+      path: {},
+      header: {},
+      query: {},
+      body: undefined
+    })
+    const after = new Date().getTime()
+    expect(after-before).toBeGreaterThan(20)
+  })
 })

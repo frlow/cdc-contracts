@@ -99,8 +99,8 @@ export abstract class Contract<TPathParams extends Params,
       const url = `${[path]
         .concat(Object.values(request.path))
         .join('/')}${queryParamsValue}`
-      const result = await autoMock.getResponse(this.method,url)
-      if(!result) throw "Mock result not found"
+      const result = await autoMock.getResponse(this.method, url)
+      if (!result) throw "Mock result not found"
       return result
     } else {
       const fetchFunc = request.fetchFunc || createDefaultFetch(fetch, "")
@@ -249,16 +249,16 @@ export type ContractCollection = {
   [index: string]: Contract<any, any, any, any, any>
 }
 
-export const autoMock = (contracts: ContractCollection) =>{
+export const autoMock = (contracts: ContractCollection, holdTimer?: number) => {
   if (typeof window === 'undefined') {
     (global as any).window = {};
   }
   (window as any).cdcAutoMock =
-    createMockStore(contracts)
+    createMockStore(contracts, holdTimer)
 }
 
 export type MockStore = ReturnType<typeof createMockStore>
-export const createMockStore = (contracts: ContractCollection) => {
+export const createMockStore = (contracts: ContractCollection, holdTimer?: number) => {
   const selectedResponses: { [index: string]: string } = {}
   const semaphores: { [index: string]: ((s: string) => void)[] } = {}
   const reset = () => {
@@ -284,9 +284,12 @@ export const createMockStore = (contracts: ContractCollection) => {
       selectedResponses[contract.key]
     )
     if (response.hold) {
-      await new Promise(resolve => {
-        semaphores[contract.key] = [...semaphores[contract.key] || [], resolve]
-      })
+      if (holdTimer)
+        await new Promise((resolve) => setTimeout(() => resolve(""), holdTimer))
+      else
+        await new Promise(resolve => {
+          semaphores[contract.key] = [...semaphores[contract.key] || [], resolve]
+        })
     }
     objectToArray(response?.transitions).forEach(
       (transition) => (selectedResponses[transition.key] = transition.value)
