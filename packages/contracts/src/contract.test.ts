@@ -1,7 +1,7 @@
 import {
   autoMock,
   Contract,
-  createMockStore,
+  createMockStore, defaultParams,
   DeleteContract,
   GetContract,
   PostContract,
@@ -12,6 +12,10 @@ import * as path from 'path'
 import exp from "constants";
 
 describe('Contract', () => {
+  beforeEach(() => {
+    (global as any).window = {};
+  })
+
   test('Get', () => {
     const getContract = new GetContract(
       'Description',
@@ -228,7 +232,7 @@ describe('Contract', () => {
     const store = createMockStore({firstContract, otherContract})
     const response1 = await store.getResponse('GET', '/api/other')
     expect(response1?.body).toStrictEqual({name: 'A'})
-    store.getResponse('GET', '/api/first')
+    await store.getResponse('GET', '/api/first')
     const response2 = await store.getResponse('GET', '/api/other')
     expect(response2?.body).toStrictEqual({name: 'B'})
   })
@@ -439,7 +443,7 @@ describe('Contract', () => {
       }
     )
     const contracts = {getContract}
-    autoMock(contracts, 25)
+    autoMock(contracts, {holdTimer: 25})
     const before = new Date().getTime()
     await getContract.Fetch({
       fetchFunc: jest.fn(),
@@ -449,6 +453,88 @@ describe('Contract', () => {
       body: undefined
     })
     const after = new Date().getTime()
-    expect(after-before).toBeGreaterThan(20)
+    expect(after - before).toBeGreaterThan(20)
+  })
+
+  test('Get mock store state', async () => {
+    const getContract = new GetContract(
+      'Description',
+      {
+        headers: {},
+        path: '/api/test',
+        params: defaultParams,
+      },
+      {
+        success: {
+          status: 200,
+        },
+      }
+    )
+    const errorContract = new GetContract(
+      'Description',
+      {
+        headers: {},
+        path: '/api/test',
+        params: defaultParams,
+      },
+      {
+        success: {
+          status: 200,
+        },
+        error: {status: 500}
+      }
+    )
+    const store = createMockStore({getContract, errorContract})
+    store.setResponse("errorContract", "error")
+    const state = store.getState()
+    expect(state).toEqual({"getContract": "success", "errorContract": "error"})
+  })
+
+  test('Set mock store state', async () => {
+    const getContract = new GetContract(
+      'Description',
+      {
+        headers: {},
+        path: '/api/test',
+        params: defaultParams,
+      },
+      {
+        success: {
+          status: 200,
+        },
+        error: {
+          status: 500
+        }
+      }
+    )
+    const store = autoMock({getContract})
+    const resultSuccess = await getContract.Fetch({...defaultParams, body: undefined})
+    expect(resultSuccess.status).toEqual(200)
+    store.setState({getContract: "error"})
+    const resultError = await getContract.Fetch({...defaultParams, body: undefined})
+    expect(resultError.status).toEqual(500)
+  })
+
+  test('Change callback', async () => {
+    const getContract = new GetContract(
+      'Description',
+      {
+        headers: {},
+        path: '/api/test',
+        params: defaultParams,
+      },
+      {
+        success: {
+          status: 200,
+        },
+        error: {
+          status: 500
+        }
+      }
+    )
+    const callback = jest.fn()
+    const store = autoMock({getContract}, {callback})
+    store.setResponse("getContract", "error")
+    expect(callback).toHaveBeenCalledWith({getContract: "error"})
   })
 })

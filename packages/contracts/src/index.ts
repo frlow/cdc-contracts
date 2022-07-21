@@ -1,3 +1,5 @@
+import Dict = NodeJS.Dict;
+
 export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 export type Params = { [index: string]: string }
@@ -249,20 +251,22 @@ export type ContractCollection = {
   [index: string]: Contract<any, any, any, any, any>
 }
 
-export const autoMock = (contracts: ContractCollection, holdTimer?: number) => {
+export type MockStoreOptions = { holdTimer?: number, callback?: (state: Dict<string>) => void }
+export const autoMock = (contracts: ContractCollection, options?: MockStoreOptions) => {
   if (typeof window === 'undefined') {
     (global as any).window = {};
   }
-  (window as any).cdcAutoMock =
-    createMockStore(contracts, holdTimer)
+  return (window as any).cdcAutoMock =
+    createMockStore(contracts, options)
 }
 
 export type MockStore = ReturnType<typeof createMockStore>
-export const createMockStore = (contracts: ContractCollection, holdTimer?: number) => {
+export const createMockStore = (contracts: ContractCollection, options?: MockStoreOptions) => {
   const selectedResponses: { [index: string]: string } = {}
   const semaphores: { [index: string]: ((s: string) => void)[] } = {}
   const reset = () => {
     Object.keys(selectedResponses).forEach(key => delete selectedResponses[key])
+    if (options?.callback) options.callback(selectedResponses)
   }
   const objectToArray = <T>(obj: { [index: string]: T } | undefined) => {
     if (!obj) return []
@@ -284,20 +288,21 @@ export const createMockStore = (contracts: ContractCollection, holdTimer?: numbe
       selectedResponses[contract.key]
     )
     if (response.hold) {
-      if (holdTimer)
-        await new Promise((resolve) => setTimeout(() => resolve(""), holdTimer))
+      if (options?.holdTimer)
+        await new Promise((resolve) => setTimeout(() => resolve(""), options.holdTimer))
       else
         await new Promise(resolve => {
           semaphores[contract.key] = [...semaphores[contract.key] || [], resolve]
         })
     }
     objectToArray(response?.transitions).forEach(
-      (transition) => (selectedResponses[transition.key] = transition.value)
+      (transition) => setResponse(transition.key, transition.value)
     )
     return response
   }
   const setResponse = (contractKey: string, responseKey: string) => {
     selectedResponses[contractKey] = responseKey
+    if (options?.callback) options.callback(selectedResponses)
   }
   const release = (contractKey: string) => {
     const semaphoreArray = semaphores[contractKey]
@@ -306,7 +311,15 @@ export const createMockStore = (contracts: ContractCollection, holdTimer?: numbe
       semaphoreArray.splice(0, 1)
     }
   }
-  return {getResponse, setResponse, reset, release}
+  const getState = () => Object.entries(contracts).reduce((acc, cur) => {
+    if (selectedResponses[cur[0]]) acc[cur[0]] = selectedResponses[cur[0]]
+    else acc[cur[0]] = cur[1].GetResponseKeys()[0]
+    return acc
+  }, {} as Dict<string>)
+  const setState = (states: { [i: string]: string }) => Object.entries(states).forEach(([key, value]) => {
+    selectedResponses[key] = value
+  })
+  return {getResponse, setResponse, reset, release, getState, setState}
 }
 
 export const defaultParams = {
