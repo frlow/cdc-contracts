@@ -537,4 +537,24 @@ describe('Contract', () => {
     store.setResponse("getContract", "error")
     expect(callback).toHaveBeenCalledWith({getContract: "error"})
   })
+
+  test('serialize - ignore', () => {
+    const getContract = new GetContract(
+      'Description',
+      {
+        headers: {},
+        path: '/ignored',
+        params: defaultParams
+      },
+      {
+        ignored: {
+          status: 200,
+          ignore: true
+        },
+      }
+    )
+    const serialized = serializeContracts({getContract})
+    const parsed = JSON.parse(serialized)
+    expect(parsed.getContract.responseExamples).toEqual({})
+  })
 })

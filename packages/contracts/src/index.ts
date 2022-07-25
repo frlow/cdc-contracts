@@ -11,6 +11,7 @@ export interface ResponseExample<TResponseBody> {
   body?: TResponseBody
   transitions?: Params
   hold?: boolean
+  ignore?: boolean
 }
 
 export interface FetchResponse<T> {
@@ -241,7 +242,13 @@ export class PutContract<TPathParams extends Params,
 export const serializeContracts = (contracts: {
   [index: string]: Contract<any, any, any, any, any>
 }) => {
-  return JSON.stringify(contracts, null, 2)
+  const obj = JSON.parse(JSON.stringify(contracts))
+  Object.values(obj).forEach((contract: any) => {
+    Object.entries(contract.responseExamples).forEach(([key, value]: any[]) => {
+      if (value.ignore) delete contract.responseExamples[key]
+    })
+  })
+  return JSON.stringify(obj, null, 2)
 }
 export type ResponseCollection<T> = {
   [index: string]: ResponseExample<T>
