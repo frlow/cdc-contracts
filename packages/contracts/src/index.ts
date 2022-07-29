@@ -245,6 +245,7 @@ export const serializeContracts = (contracts: {
   const obj = JSON.parse(JSON.stringify(contracts))
   Object.values(obj).forEach((contract: any) => {
     Object.entries(contract.responseExamples).forEach(([key, value]: any[]) => {
+      if (contract.responseExamples[key].transitions) delete contract.responseExamples[key].transitions
       if (value.ignore) delete contract.responseExamples[key]
     })
   })

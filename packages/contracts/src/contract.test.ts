@@ -9,7 +9,6 @@ import {
   serializeContracts,
 } from './index'
 import * as path from 'path'
-import exp from "constants";
 
 describe('Contract', () => {
   beforeEach(() => {
@@ -556,5 +555,31 @@ describe('Contract', () => {
     const serialized = serializeContracts({getContract})
     const parsed = JSON.parse(serialized)
     expect(parsed.getContract.responseExamples).toEqual({})
+  })
+
+  test('serialization should remove transitions', () => {
+    const getContract = new GetContract(
+      'Description',
+      {
+        headers: {},
+        path: '/ignored',
+        params: defaultParams
+      },
+      {
+        success: {
+          status: 200,
+          transitions: {
+            from: "to"
+          }
+        },
+      }
+    )
+    const serialized = serializeContracts({getContract})
+    const parsed = JSON.parse(serialized)
+    expect(parsed.getContract.responseExamples).toEqual({
+      success: {
+        status: 200
+      },
+    })
   })
 })
