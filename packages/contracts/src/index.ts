@@ -59,7 +59,7 @@ export const createDefaultFetch: (
       }
     }
     return {body: data, status: d.status}
-  })
+  }).catch((err: any) => Promise.reject(err))
 }
 
 export abstract class Contract<TPathParams extends Params,
