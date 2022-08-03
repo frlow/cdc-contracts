@@ -48,6 +48,7 @@ export const createDefaultFetch: (
     headers,
     body: JSON.stringify(body),
   }).then(async (d: any) => {
+    if (!d.ok) return {status: d.status}
     const serializedData = await d.text()
     let data: any = undefined
     if (serializedData === '') data = undefined
@@ -59,7 +60,7 @@ export const createDefaultFetch: (
       }
     }
     return {body: data, status: d.status}
-  }).catch((err: any) => Promise.reject(err))
+  })
 }
 
 export abstract class Contract<TPathParams extends Params,
